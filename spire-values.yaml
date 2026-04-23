@@ -1,0 +1,24 @@
+global:
+  spire:
+    trustDomain: "a2solution.ca"
+    clusterName: "kind"
+
+spire-server:
+  persistence:
+    enabled: false                        # false = good for testing / quick resets
+    # enabled: true                       # use true in production + define storageClass
+
+spiffe-oidc-discovery-provider:
+  enabled: false                          # disable until you really need JWT-SVID verification
+
+# Enable the SPIFFE CSI Driver
+spiffe-csi-driver:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  logLevel: 2

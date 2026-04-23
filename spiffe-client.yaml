@@ -1,0 +1,12 @@
+apiVersion: spire.spiffe.io/v1alpha1
+kind: ClusterSPIFFEID
+metadata:
+  name: spiffe-client
+spec:
+  spiffeIDTemplate: "spiffe://{{ .TrustDomain }}/ns/spiffe-client-ns/sa/spiffe-client-sa"
+  namespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: spiffe-client-ns
+  podSelector:
+    matchLabels:
+      app: spiffe-client
