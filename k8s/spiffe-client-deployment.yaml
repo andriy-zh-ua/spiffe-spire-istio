@@ -33,6 +33,13 @@ spec:
           value: "America/New_York"
         - name: SPIFFE_ENDPOINT_SOCKET
           value: "unix:///run/spire/sockets/spire-agent.sock"
+        ports:
+        - containerPort: 8443
+          protocol: TCP
+          name: https
+        - containerPort: 50051
+          protocol: TCP
+          name: grpc
         resources:
           requests:
             cpu: "100m"
