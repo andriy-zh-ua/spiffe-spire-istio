@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spiffe-server
+  namespace: spiffe-server-ns
+  labels:
+    app: spiffe-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spiffe-server
+  template:
+    metadata:
+      labels:
+        app: spiffe-server
+    spec:
+      serviceAccountName: spiffe-server-sa
+      containers:
+      - name: spiffe-server
+        image: semenyukandriyv/spiffe-server:latest
+        imagePullPolicy: IfNotPresent
+
+        # Mount the SPIRE agent socket so the Go application can request its SPIFFE SVID
+        volumeMounts:
+        - name: spire-agent-socket
+          mountPath: /run/spire/sockets
+          readOnly: true
+
+        # Environment variable for Go app to know where the socket is
+        env:
+        - name: TZ
+          value: "America/New_York"
+        - name: SPIFFE_ENDPOINT_SOCKET
+          value: "unix:///run/spire/sockets/spire-agent.sock"
+        ports:
+        - containerPort: 8443
+          protocol: TCP
+          name: https
+        - containerPort: 50051
+          protocol: TCP
+          name: grpc
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
+      # Use SPIFFE CSI Driver to provide the SPIRE Workload API socket
+      volumes:
+      - name: spire-agent-socket
+        csi:
+          driver: csi.spiffe.io
+          readOnly: true
